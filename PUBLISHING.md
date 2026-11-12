@@ -1,51 +1,42 @@
-# Publishing to npm
+# Publishing Logview Local to npm
 
-The package is configured as **`@mk-tdev/logview`**, with public access. The CLI installed by either npm or GitHub is named **`logview`**.
+The public npm package is **`logview-local`**. Its installed command is also **`logview-local`**. The source repository is [mk-tdev/logview](https://github.com/mk-tdev/logview).
 
-## First npm release
+## Release
 
-1. Sign in to the npm account that owns the `mk-tdev` scope:
+Sign in to an npm account with publishing access. The initial publisher is **`mktdev`**; npm and GitHub usernames are separate.
 
-   ```sh
-   npm login
-   npm whoami
-   ```
+```sh
+npm login
+npm whoami
+```
 
-   GitHub and npm accounts are separate. If your npm username is different, choose a scope you own and update `package.json` and the installation instructions before publishing.
+From a clean source checkout:
 
-2. From a clean checkout, validate and inspect the package:
+```sh
+npm run check
+npm test
+npm run test:package
+npm pack --dry-run
+npm publish --access public
+```
 
-   ```sh
-   npm run check
-   npm test
-   npm run test:package
-   npm pack --dry-run
-   ```
+The `prepublishOnly` hook runs syntax checks, integration tests, and the isolated global-install smoke test. The tarball includes only the launcher, capture modules, browser assets, sample app, and package documentation. It excludes screenshots, test output, repository metadata, and credentials.
 
-3. Publish:
+npm may require browser verification or an OTP. Complete that through npm's sign-in or publishing flow. Never commit `.npmrc` or tokens.
 
-   ```sh
-   npm publish --access public
-   ```
+Verify the public release:
 
-   npm may require interactive verification or an OTP, depending on account settings. Complete that through npm's own sign-in flow; do not add tokens or `.npmrc` credentials to this repository. The `prepublishOnly` hook repeats the checks, integration tests, and real global-install smoke test before publishing.
+```sh
+npm view logview-local version
+npm install -g logview-local
+logview-local --version
+logview-local demo
+```
 
-4. Verify the public version:
+For later releases, update `CHANGELOG.md`, run `npm version patch` (or `minor` / `major` as appropriate), push the commit and tag, then run `npm publish --access public`. Published versions cannot be reused.
 
-   ```sh
-   npm view @mk-tdev/logview version
-   npm install -g @mk-tdev/logview
-   logview --version
-   logview demo
-   ```
-
-5. Update the README to make the npm registry command the primary installation option once publication is confirmed.
-
-## Later releases
-
-Update `CHANGELOG.md`, run `npm version patch` (or `minor` / `major` as appropriate), push the commit and tag, then run `npm publish --access public`. Each published version must have a unique version number.
-
-Until a registry release exists, users can install the public repository directly with npm:
+The GitHub source can also be installed directly:
 
 ```sh
 npm install -g github:mk-tdev/logview

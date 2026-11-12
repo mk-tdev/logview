@@ -34,10 +34,10 @@ async function main() {
     assert.ok(files.every(file => /^(bin\/|lib\/|web\/|examples\/|LICENSE$|README\.md$|CHANGELOG\.md$|package\.json$)/.test(file)), 'Tarball contains only public runtime files and package docs');
     const prefix = path.join(temporary, 'global install with spaces');
     await run('npm', ['install', '--offline', '--global', '--prefix', prefix, '--ignore-scripts', '--no-audit', '--no-fund', path.join(temporary, pack.filename)], { env });
-    const command = path.join(prefix, 'bin/logview');
+    const command = path.join(prefix, 'bin/logview-local');
     const installed = path.join(prefix, 'lib/node_modules', name);
     assert.equal((await run(command, ['--version'], { env })).trim(), version);
-    assert.match(await run(command, ['--help'], { env }), /logview npm run dev/);
+    assert.match(await run(command, ['--help'], { env }), /logview-local npm run dev/);
     assert.match(await run(command, [], { env }), /Logview/);
     const { startServer } = require(path.join(installed, 'lib/server.cjs'));
     collector = await startServer({ port: 0 });

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Your Node.js logs, with room to explore. A private local console.">
-  <title>Logview · Local console</title>
+  <title>Logview Local · Node.js console</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
@@ -29,7 +29,7 @@
       <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search messages, keys, or values…" aria-label="Search logs"><kbd>/</kbd></label><button id="pause" class="button">Ⅱ Pause</button><label class="follow"><input id="follow" type="checkbox" checked> Follow</label></div>
       <div class="filterbar"><div class="levels" role="group" aria-label="Log level"><button data-level="all" class="selected">All <span id="all-count">0</span></button><button data-level="error">Errors <span id="error-count">0</span></button><button data-level="warn">Warnings <span id="warn-count">0</span></button><button data-level="info">Info</button><button data-level="debug">Debug</button><button data-level="raw">Output</button></div><span id="visible-count">0 visible</span></div>
       <div class="panes">
-        <section class="stream" aria-label="Log entries"><div class="list-heading"><span>Time</span><span>Level</span><span>Message</span></div><div id="entries" role="listbox" aria-label="Select a log entry" tabindex="0"></div><div id="empty"><div class="empty-symbol">{ }</div><h2>Give your logs a little space.</h2><p>Run a Node.js project through Logview.<br>Objects, errors, and output will appear here.</p><code>logview run -- npm run dev</code></div></section>
+        <section class="stream" aria-label="Log entries"><div class="list-heading"><span>Time</span><span>Level</span><span>Message</span></div><div id="entries" role="listbox" aria-label="Select a log entry" tabindex="0"></div><div id="empty"><div class="empty-symbol">{ }</div><h2>Give your logs a little space.</h2><p>Run a Node.js project through Logview.<br>Objects, errors, and output will appear here.</p><code>logview-local run -- npm run dev</code></div></section>
         <section class="inspector" aria-label="Entry details"><div class="inspector-heading"><span>Inspector</span><span class="snapshot-tag">Snapshot</span></div><div id="details-empty"><span>↖</span><h2>There’s more inside.</h2><p>Select a log to explore its values.<br>Expand objects without the terminal clutter.</p></div><div id="detail" hidden><div class="detail-meta"><div class="detail-top"><span id="detail-level" class="level"></span><span id="detail-time"></span></div><h2 id="detail-title"></h2><div id="detail-context"></div><a id="source-link" class="source-link"></a></div><div class="value-toolbar"><span>Captured values</span><div><button id="expand" class="text-button">Expand</button><button id="collapse" class="text-button">Collapse</button><button id="copy" class="text-button">Copy JSON</button></div></div><div id="values"></div><div class="snapshot-note">Values captured when logged. Getters are not evaluated.<span id="capture-warning"></span></div></div></section>
       </div>
       <footer class="console-footer"><span id="footer-status">Waiting for your first process</span><span>In-memory history <span class="footer-separator">/</span> <span id="retention">2,000 entries</span></span></footer>

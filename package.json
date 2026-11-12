@@ -1,17 +1,45 @@
 {
-  "name": "@mk-tdev/logview",
+  "name": "logview-local",
   "version": "0.1.0",
-  "description": "A local, expandable console for all your Node.js projects.",
+  "description": "An expandable local browser console for Node.js logs. Install globally, use across projects without code changes.",
   "license": "MIT",
   "author": "mk-tdev",
-  "repository": { "type": "git", "url": "git+https://github.com/mk-tdev/logview.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-tdev/logview.git"
+  },
   "homepage": "https://github.com/mk-tdev/logview#readme",
-  "bugs": { "url": "https://github.com/mk-tdev/logview/issues" },
-  "keywords": ["nodejs", "console", "logs", "logging", "cli", "inspector", "debugging"],
-  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/" },
-  "files": ["bin/", "lib/", "web/", "examples/", "LICENSE", "README.md", "CHANGELOG.md"],
-  "engines": { "node": ">=20" },
-  "bin": { "logview": "bin/logview.cjs" },
+  "bugs": {
+    "url": "https://github.com/mk-tdev/logview/issues"
+  },
+  "keywords": [
+    "nodejs",
+    "console",
+    "logs",
+    "logging",
+    "cli",
+    "inspector",
+    "debugging"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "web/",
+    "examples/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "logview-local": "bin/logview.cjs"
+  },
   "scripts": {
     "start": "node bin/logview.cjs serve",
     "demo": "node bin/logview.cjs demo",

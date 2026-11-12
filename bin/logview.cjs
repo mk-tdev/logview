@@ -9,7 +9,7 @@ async function main() {
   let args = process.argv.slice(2);
   if (args[0] === '--version' || args[0] === '-v') { console.log(version); return; }
   if (!args.length || args[0] === '--help' || args[0] === '-h' || args[0] === 'help') {
-    console.log(`Logview ${version} — a local console for Node.js\n\n  logview serve                 Start a shared collector\n  logview demo                  Run the sample Node app\n  logview npm run dev            Capture an existing project\n  logview run -- npm run dev     Explicit form\n  logview -- node app.js         Run a script\n\nOptions before the command:\n  --port 4317     Collector port (or LOGVIEW_PORT)\n  --project name  Project label\n  --version, -v  Print the installed version\n\nOpen the printed localhost URL. Press Ctrl+C to stop. Node.js 20+ required.\nDocs: https://github.com/mk-tdev/logview#readme`); return;
+    console.log(`Logview Local ${version} — a local console for Node.js\n\n  logview-local serve                 Start a shared collector\n  logview-local demo                  Run the sample Node app\n  logview-local npm run dev            Capture an existing project\n  logview-local run -- npm run dev     Explicit form\n  logview-local -- node app.js         Run a script\n\nOptions before the command:\n  --port 4317     Collector port (or LOGVIEW_PORT)\n  --project name  Project label\n  --version, -v  Print the installed version\n\nOpen the printed localhost URL. Press Ctrl+C to stop. Node.js 20+ required.\nDocs: https://github.com/mk-tdev/logview#readme`); return;
   }
   let port = Number(process.env.LOGVIEW_PORT || 4317), project = path.basename(process.cwd());
   let mode = 'run';
@@ -22,7 +22,7 @@ async function main() {
   if (args[0] === '--') args.shift();
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Port must be an integer from 1 to 65535.');
   if (typeof project !== 'string' || !project.trim()) throw new Error('Supply a nonempty project name after --project.');
-  if (mode === 'run' && !args.length) throw new Error('Supply a command, for example: logview run -- npm run dev');
+  if (mode === 'run' && !args.length) throw new Error('Supply a command, for example: logview-local run -- npm run dev');
   if (mode === 'demo') { args = [process.execPath, path.join(__dirname, '../examples/demo.cjs'), ...args]; project = 'Sample shop'; }
   let owned, connection;
   const url = `http://127.0.0.1:${port}`;
@@ -35,7 +35,7 @@ async function main() {
     if (error.message.includes('incompatible')) throw error;
     owned = await startServer({ port }); connection = owned;
   }
-  console.log(`\n  Logview  ${url}\n  ${owned ? 'Collector started' : 'Connected to shared collector'}${mode === 'serve' ? '' : ` · ${project}`}\n`);
+  console.log(`\n  Logview Local  ${url}\n  ${owned ? 'Collector started' : 'Connected to shared collector'}${mode === 'serve' ? '' : ` · ${project}`}\n`);
   let child, stopping = false;
   async function stop(signal) {
     if (stopping) return; stopping = true;
@@ -65,4 +65,4 @@ async function main() {
     if (owned) console.log(`\n  Command finished${code === null ? ` (${signal})` : ` (code ${code})`}. Logs remain at ${url}\n  Press Ctrl+C to close the collector.\n`);
   });
 }
-main().catch(error => { console.error(`Logview: ${error.message}`); process.exitCode = 1; });
+main().catch(error => { console.error(`Logview Local: ${error.message}`); process.exitCode = 1; });
