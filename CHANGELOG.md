@@ -10,4 +10,4 @@
 - Inherited capture for Node child processes and worker threads.
 - Sample Node app, integration tests, browser checks, and a global-install package smoke test.
 
-Published to npm as `logview-local`; the public repository remains `mk-tdev/logview`.
+The npm package and global command are named `logview-local`; the public repository is `mk-tdev/logview`.
