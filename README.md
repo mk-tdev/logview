@@ -12,8 +12,6 @@ Keep your existing `console.log()` calls and explore objects, arrays, errors, Ma
 
 Requires **Node.js 20 or newer** and npm.
 
-> The first registry release is waiting for npm account 2FA verification. Until then, use the GitHub installation command below.
-
 Install from npm:
 
 ```sh
