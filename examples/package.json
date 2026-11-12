@@ -1,0 +1,8 @@
+{
+  "name": "logview-sample-shop",
+  "private": true,
+  "scripts": {
+    "start": "node demo.cjs",
+    "once": "node demo.cjs --once"
+  }
+}

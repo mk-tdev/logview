@@ -1,0 +1,23 @@
+{
+  "name": "@mk-tdev/logview",
+  "version": "0.1.0",
+  "description": "A local, expandable console for all your Node.js projects.",
+  "license": "MIT",
+  "author": "mk-tdev",
+  "repository": { "type": "git", "url": "git+https://github.com/mk-tdev/logview.git" },
+  "homepage": "https://github.com/mk-tdev/logview#readme",
+  "bugs": { "url": "https://github.com/mk-tdev/logview/issues" },
+  "keywords": ["nodejs", "console", "logs", "logging", "cli", "inspector", "debugging"],
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/" },
+  "files": ["bin/", "lib/", "web/", "examples/", "LICENSE", "README.md", "CHANGELOG.md"],
+  "engines": { "node": ">=20" },
+  "bin": { "logview": "bin/logview.cjs" },
+  "scripts": {
+    "start": "node bin/logview.cjs serve",
+    "demo": "node bin/logview.cjs demo",
+    "test": "node --test test/*.test.cjs",
+    "test:package": "node test/package-smoke.cjs",
+    "prepublishOnly": "npm run check && npm test && npm run test:package",
+    "check": "node --check bin/logview.cjs && node --check lib/server.cjs && node --check lib/capture.cjs && node --check lib/deliver.cjs && node --check lib/snapshot.cjs && node --check web/app.js"
+  }
+}
