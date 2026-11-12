@@ -1,6 +1,6 @@
 {
   "name": "logview-local",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An expandable local browser console for Node.js logs. Install globally, use across projects without code changes.",
   "license": "MIT",
   "author": "mk-tdev",
@@ -46,6 +46,6 @@
     "test": "node --test test/*.test.cjs",
     "test:package": "node test/package-smoke.cjs",
     "prepublishOnly": "npm run check && npm test && npm run test:package",
-    "check": "node --check bin/logview.cjs && node --check lib/server.cjs && node --check lib/capture.cjs && node --check lib/deliver.cjs && node --check lib/snapshot.cjs && node --check web/app.js"
+    "check": "node --check bin/logview.cjs && node --check lib/server.cjs && node --check lib/capture.cjs && node --check lib/deliver.cjs && node --check lib/snapshot.cjs && node --check web/app.js && node --check web/preferences.js"
   }
 }

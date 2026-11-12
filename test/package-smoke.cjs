@@ -28,7 +28,7 @@ async function main() {
     const env = { ...process.env, npm_config_cache: path.join(temporary, 'npm-cache') };
     const pack = JSON.parse(await run('npm', ['pack', '--json', '--pack-destination', temporary], { cwd: path.join(__dirname, '..'), env }))[0];
     const files = pack.files.map(file => file.path);
-    for (const required of ['package.json', 'bin/logview.cjs', 'lib/capture.cjs', 'lib/deliver.cjs', 'lib/snapshot.cjs', 'lib/server.cjs', 'web/index.html', 'web/app.js', 'web/style.css', 'web/favicon.svg', 'examples/demo.cjs', 'examples/child.cjs', 'LICENSE', 'README.md']) {
+    for (const required of ['package.json', 'bin/logview.cjs', 'lib/capture.cjs', 'lib/deliver.cjs', 'lib/snapshot.cjs', 'lib/server.cjs', 'web/index.html', 'web/app.js', 'web/preferences.js', 'web/style.css', 'web/favicon.svg', 'examples/demo.cjs', 'examples/child.cjs', 'LICENSE', 'README.md']) {
       assert.ok(files.includes(required), `Missing ${required} from tarball`);
     }
     assert.ok(files.every(file => /^(bin\/|lib\/|web\/|examples\/|LICENSE$|README\.md$|CHANGELOG\.md$|package\.json$)/.test(file)), 'Tarball contains only public runtime files and package docs');

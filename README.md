@@ -20,6 +20,8 @@ npm install -g logview-local
 
 This installs the **`logview-local`** command. No global project configuration or build step is required.
 
+To upgrade, run `npm install -g logview-local@latest`. Stop any running collector with **Ctrl+C**, launch it again, and refresh the viewer to load the updated interface.
+
 You can also install directly from the public GitHub repository:
 
 ```sh
@@ -105,6 +107,10 @@ The bundled sample covers nested data, circular references, special JavaScript t
 
 ## Viewer
 
+- Compact, single-line logs leave most of the desktop workspace to the inspector.
+- Use **☰** in the top bar to minimize or restore the sidebar. Your desktop preference is remembered; mobile navigation opens as a drawer.
+- Click **Full screen** in the inspector to inspect values across the whole viewport. **Close** or **Esc** returns to the console, preserving the selected entry and expanded branches.
+- Choose **System**, **Light**, or **Dark** in the theme selector. The choice is saved in your browser, and System follows operating system changes. Theme controls are also available in the full-screen inspector.
 - Select a log and expand its captured arguments independently.
 - Search keys and values, including captured descendants that are collapsed.
 - Filter errors, warnings, info, debug, raw output, projects, and processes.
@@ -114,6 +120,14 @@ The bundled sample covers nested data, circular references, special JavaScript t
 - **Copy JSON** copies the selected entry's typed argument snapshots; **Export** downloads the currently filtered entries as JSON.
 - **Clear view** hides existing entries in this browser tab. Other viewers retain their history; reloading restores the collector’s retained entries.
 - Press `/` to search, then use arrow keys outside the input to select entries.
+
+### Dark mode
+
+![Compact dark console with a larger inspector](https://raw.githubusercontent.com/mk-tdev/logview/main/docs/screenshot-dark.png)
+
+### Full-screen inspector
+
+![Full-screen inspector in dark mode](https://raw.githubusercontent.com/mk-tdev/logview/main/docs/inspector-fullscreen.png)
 
 ## How capture works
 
@@ -132,7 +146,7 @@ Events are batched asynchronously, with a bounded synchronous helper at process 
 - Logs written only to files, direct filesystem writes to file descriptors, native subprocess logs that bypass Node stream methods, and processes that remove the preload/environment are not captured.
 - Worker threads that explicitly opt out of inherited preloads are unsupported. A parent that manually forwards a captured child's piped output can create duplicate text entries.
 - `SIGKILL` cannot flush final logs. Signal-terminated processes may remain marked connected until the collector restarts; there is no process-health polling yet.
-- The collector keeps up to **2,000 events or 16 MiB**, whichever comes first, and 100 process records. Lifecycle events also count toward retention. There is no on-disk persistence.
+- The collector keeps up to **2,000 events or 16 MiB**, whichever comes first, and 100 process records. Lifecycle events also count toward retention. Logs have no on-disk persistence; theme and sidebar preferences are stored locally in your browser.
 - Each snapshot has a depth limit of 16, 100 children per object, 3,000 nodes, a 20,000-character per-string limit, and a shared 200,000-character string budget. Omitted data is marked. Search covers captured values only.
 - Getters, custom inspectors, and `toJSON` are not deliberately evaluated. Proxy reflection traps can execute. Private fields and inherited properties are not captured. Tables appear as expandable row arrays rather than a spreadsheet.
 - Snapshots represent capture-time values; they are not live object references. JSON copying/export preserves this typed snapshot format, including reference and truncation markers.

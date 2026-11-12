@@ -4,6 +4,59 @@ const state = { events: [], sessions: [], project: null, process: null, level: '
 const lowerCache = new WeakMap();
 const time = timestamp => new Date(timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, fractionalSecondDigits: 3 });
 let visible = [], renderQueued = false, toastTimer;
+const root = document.documentElement;
+const themeMedia = matchMedia('(prefers-color-scheme: dark)');
+const narrowViewport = matchMedia('(max-width: 760px)');
+function readPreference(key) { try { return localStorage.getItem(key); } catch { return null; } }
+function savePreference(key, value) { try { localStorage.setItem(key, value); } catch {} }
+function setTheme(preference, persist = true) {
+  const theme = ['light', 'dark'].includes(preference) ? preference : 'system';
+  root.dataset.themePreference = theme;
+  root.dataset.theme = theme === 'system' ? (themeMedia.matches ? 'dark' : 'light') : theme;
+  for (const control of document.querySelectorAll('[data-theme-select]')) control.value = theme;
+  if (persist) savePreference('logview.theme', theme);
+}
+function setSidebar(collapsed, persist = true) {
+  root.dataset.sidebarCollapsed = String(collapsed);
+  const label = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  $('sidebar-toggle').setAttribute('aria-label', label);
+  $('sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
+  $('sidebar-toggle').title = label;
+  const navigationOverlay = narrowViewport.matches && !collapsed;
+  $('sidebar-backdrop').hidden = !navigationOverlay;
+  document.querySelector('main').inert = navigationOverlay;
+  if (collapsed && $('sidebar').contains(document.activeElement)) $('sidebar-toggle').focus();
+  if (navigationOverlay) $('sidebar-close').focus();
+  if (persist && !narrowViewport.matches) savePreference('logview.sidebarCollapsed', String(collapsed));
+}
+setTheme(root.dataset.themePreference, false);
+setSidebar(root.dataset.sidebarCollapsed === 'true', false);
+for (const control of document.querySelectorAll('[data-theme-select]')) control.addEventListener('change', event => setTheme(event.target.value));
+themeMedia.addEventListener('change', () => { if (root.dataset.themePreference === 'system') setTheme('system', false); });
+narrowViewport.addEventListener('change', () => setSidebar(narrowViewport.matches || readPreference('logview.sidebarCollapsed') === 'true', false));
+$('sidebar-toggle').addEventListener('click', () => setSidebar(root.dataset.sidebarCollapsed !== 'true'));
+for (const id of ['sidebar-close', 'sidebar-backdrop']) $(id).addEventListener('click', () => setSidebar(true));
+const inspectorModal = $('inspector-modal');
+$('inspector-fullscreen').addEventListener('click', () => {
+  const panel = $('inspector-panel');
+  const scroll = panel.scrollTop;
+  $('inspector-modal-body').append(panel);
+  inspectorModal.append($('toast'));
+  inspectorModal.showModal();
+  document.body.classList.add('inspector-expanded');
+  panel.scrollTop = scroll;
+  $('inspector-close').focus();
+});
+$('inspector-close').addEventListener('click', () => inspectorModal.close());
+inspectorModal.addEventListener('close', () => {
+  const panel = $('inspector-panel');
+  const scroll = panel.scrollTop;
+  $('panes').append(panel);
+  document.body.append($('toast'));
+  document.body.classList.remove('inspector-expanded');
+  panel.scrollTop = scroll;
+  $('inspector-fullscreen').focus({ preventScroll: true });
+});
 function node(tag, className, text) {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -66,7 +119,7 @@ function renderSidebar() {
   const projectList = projects.map(project => {
     const button = node('button', `project-button${project === state.project ? ' active' : ''}`);
     button.append(node('span', 'project-icon'), node('span', 'project-name', project), node('span', 'project-number', entries.filter(e => e.project === project).length));
-    button.addEventListener('click', () => { state.project = project; state.process = null; render(); });
+    button.addEventListener('click', () => { state.project = project; state.process = null; render(); if (narrowViewport.matches) setSidebar(true); });
     return button;
   });
   $('projects').replaceChildren(...projectList);
@@ -76,7 +129,7 @@ function renderSidebar() {
     label.append(node('small', '', `${session.status === 'exited' ? 'Exited' : 'Connected'} · ${session.command || 'Node.js'}`));
     button.title = session.command || 'Node.js';
     button.append(node('span', `status-dot${session.status === 'running' ? ' live' : ''}`), label);
-    button.addEventListener('click', () => { state.process = session.id; render(); });
+    button.addEventListener('click', () => { state.process = session.id; render(); if (narrowViewport.matches) setSidebar(true); });
     return button;
   });
   $('processes').replaceChildren(...processes);
@@ -105,9 +158,8 @@ function render() {
     row.append(node('span', 'timestamp', time(entry.timestamp)), node('span', `level ${category(entry)}`, entry.level));
     const content = node('div'); const message = node('div', 'entry-message', `${'› '.repeat(Math.min(entry.group || 0, 4))}${summary(entry)}`);
     message.title = summary(entry);
-    const location = node('div', 'entry-location');
-    location.append(node('span', 'project-label', entry.project), document.createTextNode(` · ${entry.pid} ${entry.source ? `· ${entry.source.file.split('/').pop()}:${entry.source.line}` : ''}`));
-    content.append(message, location); row.append(content);
+    row.title = `${summary(entry)}\n${entry.project} · Process ${entry.pid}${entry.source ? ` · ${entry.source.file}:${entry.source.line}` : ''}`;
+    content.append(message); row.append(content);
     row.addEventListener('click', () => select(entry.id));
     fragment.append(row);
   }
@@ -182,7 +234,7 @@ function renderDetails() {
   }
   $('capture-warning').textContent = entry.droppedBefore ? `${entry.droppedBefore} earlier entries dropped because the capture queue was full.` : '';
 }
-$('all-projects').addEventListener('click', () => { state.project = null; state.process = null; render(); });
+$('all-projects').addEventListener('click', () => { state.project = null; state.process = null; render(); if (narrowViewport.matches) setSidebar(true); });
 $('search').addEventListener('input', event => { state.query = event.target.value.toLowerCase().trim(); render(); });
 for (const button of document.querySelectorAll('[data-level]')) button.addEventListener('click', () => { state.level = button.dataset.level; render(); });
 $('pause').addEventListener('click', () => {
@@ -207,7 +259,9 @@ $('export').addEventListener('click', () => {
   const url = URL.createObjectURL(blob); const link = node('a'); link.href = url; link.download = `logview-${new Date().toISOString().replaceAll(':', '-')}.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 document.addEventListener('keydown', event => {
-  if (event.target instanceof HTMLInputElement) return;
+  if (inspectorModal.open) return;
+  if (event.key === 'Escape' && narrowViewport.matches && root.dataset.sidebarCollapsed === 'false') { setSidebar(true); $('sidebar-toggle').focus(); return; }
+  if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.key === '/') { event.preventDefault(); $('search').focus(); }
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     if (!visible.length) return; event.preventDefault();

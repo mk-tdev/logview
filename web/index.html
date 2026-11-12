@@ -3,39 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Your Node.js logs, with room to explore. A private local console.">
+  <meta name="description" content="Explore your Node.js logs in a private local console.">
   <title>Logview Local · Node.js console</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/preferences.js"></script>
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <aside class="sidebar">
-    <a class="brand" href="/" aria-label="Logview home"><span class="brand-mark">{<span>·</span>}</span> Logview <span class="local-tag">local</span></a>
+  <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+    <div class="sidebar-header">
+      <a class="brand" href="/" aria-label="Logview home"><span class="brand-mark">{<span>·</span>}</span><span class="brand-name">Logview</span><span class="local-tag">local</span></a>
+      <button id="sidebar-close" class="icon-button" aria-label="Close sidebar" title="Close sidebar">×</button>
+    </div>
     <div class="sidebar-body">
-      <p class="nav-label">Workspace</p>
-      <button class="workspace-button active" id="all-projects"><span>▤ &nbsp; All projects</span><span id="project-total">0</span></button>
+      <button class="workspace-button active" id="all-projects" title="All projects"><span class="workspace-icon" aria-hidden="true">▤</span><span class="workspace-label">All projects</span><span id="project-total">0</span></button>
       <div class="section-heading"><span>Projects</span><span id="project-count">0</span></div>
       <nav id="projects" aria-label="Projects"></nav>
-      <div class="section-heading process-heading"><span>Processes</span></div>
+      <div class="section-heading"><span>Processes</span></div>
       <nav id="processes" aria-label="Processes"></nav>
     </div>
-    <div class="sidebar-bottom"><span class="privacy-mark">◈</span><div>On your machine<small>Logs stay in this collector’s memory.</small></div></div>
+    <div class="sidebar-bottom"><span class="privacy-mark" title="Logs stay on your machine">◈</span><div class="privacy-copy">On your machine<small>In-memory history</small></div></div>
   </aside>
+  <button id="sidebar-backdrop" class="sidebar-backdrop" aria-label="Close workspace navigation" tabindex="-1" hidden></button>
   <main>
-    <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong id="breadcrumb">All projects</strong></div><div class="connection"><span id="connection-dot" class="status-dot"></span><span id="connection">Connecting</span></div></header>
-    <section class="page-heading"><div><div class="title-row"><h1>Console</h1><span class="count-tag" id="total-count">0 entries</span></div><p>Your logs, with room to explore.</p></div><div class="header-actions"><button id="export" class="button">↓ Export</button><button id="clear" class="button">Clear view</button></div></section>
+    <header class="topbar">
+      <div class="topbar-start"><button id="sidebar-toggle" class="icon-button" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar" title="Collapse sidebar">☰</button><div class="breadcrumb">Workspace <span>/</span><strong id="breadcrumb">All projects</strong></div></div>
+      <div class="topbar-end"><div class="connection"><span id="connection-dot" class="status-dot"></span><span id="connection">Connecting</span></div><label class="theme-control"><span>Theme</span><select id="theme" data-theme-select aria-label="Color theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>
+    </header>
+    <section class="page-heading"><div class="title-row"><h1>Console</h1><span class="count-tag" id="total-count">0 entries</span></div><div class="header-actions"><button id="export" class="button">↓ Export</button><button id="clear" class="button">Clear view</button></div></section>
     <section class="console-shell" aria-label="Log console">
       <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search messages, keys, or values…" aria-label="Search logs"><kbd>/</kbd></label><button id="pause" class="button">Ⅱ Pause</button><label class="follow"><input id="follow" type="checkbox" checked> Follow</label></div>
       <div class="filterbar"><div class="levels" role="group" aria-label="Log level"><button data-level="all" class="selected">All <span id="all-count">0</span></button><button data-level="error">Errors <span id="error-count">0</span></button><button data-level="warn">Warnings <span id="warn-count">0</span></button><button data-level="info">Info</button><button data-level="debug">Debug</button><button data-level="raw">Output</button></div><span id="visible-count">0 visible</span></div>
-      <div class="panes">
+      <div class="panes" id="panes">
         <section class="stream" aria-label="Log entries"><div class="list-heading"><span>Time</span><span>Level</span><span>Message</span></div><div id="entries" role="listbox" aria-label="Select a log entry" tabindex="0"></div><div id="empty"><div class="empty-symbol">{ }</div><h2>Give your logs a little space.</h2><p>Run a Node.js project through Logview.<br>Objects, errors, and output will appear here.</p><code>logview-local run -- npm run dev</code></div></section>
-        <section class="inspector" aria-label="Entry details"><div class="inspector-heading"><span>Inspector</span><span class="snapshot-tag">Snapshot</span></div><div id="details-empty"><span>↖</span><h2>There’s more inside.</h2><p>Select a log to explore its values.<br>Expand objects without the terminal clutter.</p></div><div id="detail" hidden><div class="detail-meta"><div class="detail-top"><span id="detail-level" class="level"></span><span id="detail-time"></span></div><h2 id="detail-title"></h2><div id="detail-context"></div><a id="source-link" class="source-link"></a></div><div class="value-toolbar"><span>Captured values</span><div><button id="expand" class="text-button">Expand</button><button id="collapse" class="text-button">Collapse</button><button id="copy" class="text-button">Copy JSON</button></div></div><div id="values"></div><div class="snapshot-note">Values captured when logged. Getters are not evaluated.<span id="capture-warning"></span></div></div></section>
+        <section class="inspector" id="inspector-panel" aria-label="Entry details">
+          <div class="inspector-heading"><div><strong>Inspector</strong><span class="snapshot-tag">Snapshot</span></div><button id="inspector-fullscreen" class="button" aria-haspopup="dialog" aria-controls="inspector-modal" title="Open inspector in full screen">⛶ Full screen</button></div>
+          <div id="details-empty"><span>↖</span><h2>There’s more inside.</h2><p>Select a log to explore its values.<br>Expand objects without the terminal clutter.</p></div>
+          <div id="detail" hidden><div class="detail-meta"><div class="detail-top"><span id="detail-level" class="level"></span><span id="detail-time"></span></div><h2 id="detail-title"></h2><div class="detail-origin"><span id="detail-context"></span><a id="source-link" class="source-link"></a></div></div><div class="value-toolbar"><span>Captured values</span><div><button id="expand" class="text-button">Expand</button><button id="collapse" class="text-button">Collapse</button><button id="copy" class="text-button">Copy JSON</button></div></div><div id="values"></div><div class="snapshot-note">Values captured when logged. Getters are not evaluated.<span id="capture-warning"></span></div></div>
+        </section>
       </div>
-      <footer class="console-footer"><span id="footer-status">Waiting for your first process</span><span>In-memory history <span class="footer-separator">/</span> <span id="retention">2,000 entries</span></span></footer>
+      <footer class="console-footer"><span id="footer-status">Waiting for your first process</span><span>In-memory history <span class="footer-separator">/</span><span id="retention">2,000 entries</span></span></footer>
     </section>
-    <div class="page-footnote">One console. Every project.<span>Press <kbd>/</kbd> to search · <kbd>↑</kbd> <kbd>↓</kbd> to explore</span></div>
+    <div class="page-footnote">One console. Every project.<span><kbd>/</kbd> Search &nbsp; <kbd>↑</kbd> <kbd>↓</kbd> Select a log</span></div>
   </main>
+  <dialog id="inspector-modal" aria-labelledby="modal-title">
+    <header class="modal-header"><div class="modal-title"><h2 id="modal-title">Inspector</h2><span>Full screen</span></div><div class="modal-actions"><label class="theme-control"><span>Theme</span><select data-theme-select aria-label="Inspector color theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label><button id="inspector-close" class="button" aria-label="Close full-screen inspector">Close <kbd>Esc</kbd></button></div></header>
+    <div id="inspector-modal-body"></div>
+  </dialog>
   <div id="toast" role="status" hidden></div>
 </body>
 </html>
