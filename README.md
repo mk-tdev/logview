@@ -36,7 +36,7 @@ Run the included sample:
 logview-local demo
 ```
 
-Open **http://127.0.0.1:4317**. Select **Customer loaded** and expand `profile` → `address`. The snapshot shows `Singapore` even though the app changes that value immediately after logging it.
+Open **http://127.0.0.1:4317**. Select **Customer loaded** to explore nested objects. The inspector preserves values from the moment they were logged, even if the application changes them later.
 
 In any existing Node project, prefix your usual command:
 

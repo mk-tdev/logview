@@ -1,6 +1,6 @@
 {
   "name": "logview-local",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "An expandable local browser console for Node.js logs. Install globally, use across projects without code changes.",
   "license": "MIT",
   "author": "mk-tdev",

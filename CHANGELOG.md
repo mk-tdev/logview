@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Clarify the quick-start instructions and explain capture-time snapshots without relying on a sample city name.
+
 ## 0.2.0
 
 - Compact 28px log rows and tighter toolbars show more entries at once.
